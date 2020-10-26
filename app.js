@@ -13,8 +13,8 @@ app.use(bodyParser.urlencoded({extended: false}))
 // parse application/json
 // app.use(bodyParser.json());
 
-app.use(adminRoutes);
-app.use(shopRoutes);
+app.use('/admin', adminRoutes);
+app.use('/shop', shopRoutes);
 
 app.use('/', (req, res, next) => {
     console.log('always run');
