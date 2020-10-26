@@ -10,10 +10,11 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     console.log('in anothe middleware');
-    next();
+    res.send('<h1> Hello world! </h1>')
 });
 
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
 
-server.listen(3000);
+// server.listen(3000);
+app.listen(3000);
