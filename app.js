@@ -44,13 +44,12 @@ sequalize.sync().then(result => {
     return User.findAll({where: {id: 1}});
 })
 .then(user => {
-    if(!user) {
+    if(!user[0]) {
         return User.create({ name: 'Max', email: 'test@test.com'});
     }
-    return user;
+    return user[0];
 })
 .then(user => {
-    console.log(user);
     app.listen(3000);
 })
 .catch(err => {
