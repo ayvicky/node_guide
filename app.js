@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const sequalize = require('./utils/database');
 
 const errorController = require('./controllers/error');
 
@@ -25,4 +26,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+sequalize.sync().then(result => {
+console.log(result);
 app.listen(3000);
+}).catch(err => {
+    console.log(err);
+});
