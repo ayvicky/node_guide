@@ -49,7 +49,7 @@ Cart.belongsToMany(Product, { through: CartItem});
 Product.belongsToMany(Cart, { through: CartItem});
 
 sequalize.sync(
-    { force: true}
+    // { force: true}
 ).then(result => {
     return User.findByPk(1);
 })
@@ -60,6 +60,9 @@ sequalize.sync(
     return user;
 })
 .then(user => {
+    return user.createCart();
+})
+.then(cart => {
     app.listen(3000);
 })
 .catch(err => {
