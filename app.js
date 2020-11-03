@@ -28,10 +28,9 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
+    // console.log(req.url);
     User.findByPk(1)
         .then(user => {
-            console.log('user found!');
-            console.log(user);
             req.user = user;
             next();
         })
