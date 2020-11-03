@@ -24,8 +24,10 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-    User.findAll({where: {id: 1}})
+    User.findByPk(1)
         .then(user => {
+            console.log('user found!');
+            console.log(user);
             req.user = user;
             next();
         })
@@ -41,13 +43,13 @@ Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Product);
 
 sequalize.sync().then(result => {
-    return User.findAll({where: {id: 1}});
+    return User.findByPk(1);
 })
 .then(user => {
-    if(!user[0]) {
+    if(!user) {
         return User.create({ name: 'Max', email: 'test@test.com'});
     }
-    return user[0];
+    return user;
 })
 .then(user => {
     app.listen(3000);

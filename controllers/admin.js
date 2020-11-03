@@ -13,6 +13,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
     const {title, imageUrl, description, price} = req.body;
+/*
     Product.create({
         title: title,
         price: price,
@@ -20,9 +21,10 @@ exports.postAddProduct = (req, res, next) => {
         description: description,
         userId: req.user.id
     }).then(result => {
+        console.log('Created Product');
         res.redirect('/admin/products');
     }).catch(err => console.log(err));
-    return;
+*/
     req.user
         .createProduct({
         title: title,
@@ -31,6 +33,7 @@ exports.postAddProduct = (req, res, next) => {
         description: description
     }).then(result => {
         console.log('Created Product');
+        console.log(result);
         res.redirect('/admin/products');
     }).catch(err => {
         console.log(err);
@@ -43,7 +46,21 @@ exports.getEditProduct = (req, res, next) => {
         return res.redirect('/');
     }
     const prodId = req.params.productId;
-    Product.findAll({where: {id: prodId}}).then(products => {
+    console.log('geting product for edit. : ', prodId);
+    req.user.getProducts({where: {id: prodId}})
+        .then(products => {
+            console.log('successfuly get product');
+            console.log(products[0].dataValues); 
+        res.render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            path: '/admin/edit-product',
+            editing: editMode,
+            product: products[0].dataValues
+        });
+        })
+        .catch(err => console.log(err));
+    return;
+    Product.findByPk({where: {id: prodId}}).then(products => {
         if(!products[0]) {
             return res.redirect('/');
         }
@@ -91,6 +108,18 @@ exports.postDeleteProduct = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
+    req.user
+        .getProducts()
+        .then(products => {
+            console.log('get products');
+            console.log(products);
+            res.render('admin/products', {
+                prods: products,
+                pageTitle: 'Admin Products',
+                path: '/admin/products'
+            });    
+        }).catch(err => console.log(err));
+    return;
     Product.findAll().then(products => {
         res.render('admin/products', {
             prods: products,
