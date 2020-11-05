@@ -1,4 +1,7 @@
+const mongodb = require('mongodb');
 const Product = require('../models/product');
+
+const ObjectId = mongodb.ObjectId;
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -28,16 +31,15 @@ exports.getEditProduct = (req, res, next) => {
         return res.redirect('/');
     }
     const prodId = req.params.productId;
-    console.log('geting product for edit. : ', prodId);
-    req.user.getProducts({where: {id: prodId}})
-        .then(products => {
-            console.log('successfuly get product');
-            console.log(products[0].dataValues); 
-        res.render('admin/edit-product', {
+    Product.findById(prodId)
+        .then(product => {
+            if(!product)
+                return res.redirect('/');
+            res.render('admin/edit-product', {
             pageTitle: 'Add Product',
             path: '/admin/edit-product',
             editing: editMode,
-            product: products[0].dataValues
+            product: product
         });
         })
         .catch(err => console.log(err));
@@ -63,13 +65,14 @@ exports.postEditProduct = (req, res, next) => {
         description,
         price
     } = req.body;
-    Product.findAll({where: {id: productId}}).then(products => {
-        products[0].title = title;
-        products[0].price = price;
-        products[0].description = description;
-        products[0].imageUrl = imageUrl;
-        return products[0].save();
-    })
+    const product = new Product(
+        title,
+        price,
+        description,
+        imageUrl,
+        productId
+    );
+    product.save()
     .then(result => {
         console.log('UPDATED PRODUCT!');
         res.redirect('/admin/products');
