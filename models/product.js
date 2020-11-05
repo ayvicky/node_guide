@@ -1,3 +1,4 @@
+const mongodb = require('mongodb');
 const getDb = require('../utils/database').getDb;
 
 class Product {
@@ -30,6 +31,25 @@ class Product {
                         return products;
                     })
                     .catch(err => console.log(err));
+    }
+
+    static findById(prodId) {
+        const db = getDb();
+        return db.collection('products')
+                    .find({_id: new mongodb.ObjectID(prodId)})
+                    .next()
+                    .then(product => {
+                        return product;
+                    }).catch(err => console.log(err));
+        return db
+                .collection('products')
+                .find({}, {projection: { '_id': mongodb.ObjectId(prodId) }})
+                .next()
+                .then(product => {
+                    console.log(product);
+                    return product;
+                })
+                .catch(err => console.log(err));
     }
 }
 
