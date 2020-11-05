@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
     Product.fetchAll().then(products => {
@@ -58,33 +57,12 @@ exports.getCart = (req, res, next) => {
 };
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
-    let fetchedCart;
-    let newQuantity = 1;
-    req.user
-        .getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts({ where: { id: prodId }});
+    Product.findById(prodId)
+        .then(product => {
+            return req.user.addToCart(product);
         })
-        .then(products => {
-            let product;
-            if(products.length > 0) {
-                product = products[0];
-            }
-            if(product) {
-                const oldQuantity = product.cartItem.quantity;
-                newQuantity = oldQuantity + 1;
-                return product;
-            }
-            return Product.findByPk(prodId);
-            })
-                .then(product => {
-                    return fetchedCart.addProduct(product, {
-                        through: { quantity: newQuantity}
-                    });
-                })        
-        .then(() => {
-            res.redirect('/cart');
+        .then(result => {
+            console.log(result);
         })
         .catch(err => console.log(err));
 }
