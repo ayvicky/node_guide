@@ -20,11 +20,12 @@ exports.postAddProduct = (req, res, next) => {
         description: description,
         imageUrl: imageUrl
     });
-    product.save()
-            .then(result => {
-                console.log('Created Product');
-                res.redirect('/admin/products');
-            }).catch(err => console.log(err));
+    product
+        .save()
+        .then(result => {
+            console.log('Created Product');
+            res.redirect('/admin/products');
+        }).catch(err => console.log(err));
 
 };
 
@@ -68,19 +69,19 @@ exports.postEditProduct = (req, res, next) => {
         description,
         price
     } = req.body;
-    const product = new Product(
-        title,
-        price,
-        description,
-        imageUrl,
-        productId
-    );
-    product.save()
-    .then(result => {
-        console.log('UPDATED PRODUCT!');
-        res.redirect('/admin/products');
-    })
-    .catch(err => console.log(err));
+    Product.findById(productId)
+        .then(product => {
+            product.title = title;
+            product.price = price;
+            product.description = description;
+            product.imageUrl = imageUrl;
+            return product.save();
+        }).
+        then(result => {
+            console.log('UPDATED PRODUCT!');
+            res.redirect('/admin/products');
+        })
+        .catch(err => console.log(err));
 }
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -94,7 +95,7 @@ exports.postDeleteProduct = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('admin/products', {
                 prods: products,
@@ -102,12 +103,4 @@ exports.getProducts = (req, res, next) => {
                 path: '/admin/products'
             });    
         }).catch(err => console.log(err));
-    return;
-    Product.findAll().then(products => {
-        res.render('admin/products', {
-            prods: products,
-            pageTitle: 'Admin Products',
-            path: '/admin/products'
-        });
-    }).catch(err => console.log(err));
 };
