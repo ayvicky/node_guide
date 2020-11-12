@@ -48,18 +48,6 @@ exports.getEditProduct = (req, res, next) => {
         });
         })
         .catch(err => console.log(err));
-    return;
-    Product.findByPk({where: {id: prodId}}).then(products => {
-        if(!products[0]) {
-            return res.redirect('/');
-        }
-        res.render('admin/edit-product', {
-            pageTitle: 'Add Product',
-            path: '/admin/edit-product',
-            editing: editMode,
-            product: products[0]
-        });
-    }).catch(err => console.log(err));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -97,7 +85,10 @@ exports.postDeleteProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
     Product.find()
+        .select('title price -_id')
+        .populate('userId', 'name')
         .then(products => {
+            console.log(products);
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',
