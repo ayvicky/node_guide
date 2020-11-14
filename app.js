@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -33,13 +34,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(
     session({
         secret: 'my secret',
-        resave: false,
-        saveUninitialized: false,
+        resave: true,
+        saveUninitialized: true,
         store: store
     }));
 app.use(csrfProtection);
+app.use(flash());
 app.use((req, res, next) => {
-    User.findById('5fa5458aef080c1e5c13d045')
+    User.findById('5faf8cb2e32d1e13389e02bc')
         .then(user => {
             req.user = user;
             next();
