@@ -1,6 +1,5 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
-const user = require('../models/user');
 
 exports.getProducts = (req, res, next) => {
     Product.find()
@@ -12,7 +11,7 @@ exports.getProducts = (req, res, next) => {
                 hasProducts: products.length > 0,
                 activeShop: true,
                 productCSS: true,
-                isAuthenticated: false
+                isAuthenticated: req.session.isLoggedIn
             });
         }).catch(err => console.log(err));
 };
@@ -24,7 +23,7 @@ exports.getProduct = (req, res, next) => {
                 product: product,
                 pageTitle: product.title,
                 path: '/products',
-                isAuthenticated: false
+                isAuthenticated: req.session.isLoggedIn
             })
         }).catch(err => { console.log(err); });
 };
@@ -38,7 +37,7 @@ exports.getIndex = (req, res, next) => {
                 hasProducts: products.length > 0,
                 activeShop: true,
                 productCSS: true,
-                isAuthenticated: false
+                isAuthenticated: req.session.isLoggedIn
             });
         }).catch(err => console.log(err));
 };
@@ -51,7 +50,8 @@ exports.getCart = (req, res, next) => {
                 res.render('shop/cart', {
                     path: '/cart',
                     pageTitle: 'Your Cart',
-                    products: products
+                    products: products,
+                    isAuthenticated: req.session.isLoggedIn
                 })
         })
         .catch(err => console.log(err));
@@ -84,7 +84,7 @@ exports.getOrders = (req, res, next) => {
                 path: '/orders',
                 pageTitle: 'Your Orders',
                 orders: orders,
-                isAuthenticated: false
+                isAuthenticated: req.session.isLoggedIn
             });
         }).catch(err => console.log(err));
 };
@@ -115,6 +115,7 @@ exports.postOrder = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
     res.render('shop/checkout', {
         path: '/checkout',
-        pageTitle: 'Checkout'
+        pageTitle: 'Checkout',
+        isAuthenticated: req.session.isLoggedIn
     });
 };
