@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport(sendgridTransport({
     }
 }));
 
-
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
     message = (message.length > 0) ? message[0] : null;
@@ -99,5 +98,15 @@ exports.postLogout = (req, res, next) => {
     req.session.destroy(err => {
         console.log(err);
         res.redirect('/');
+    });
+};
+
+exports.getReset = (req, res, next) => {
+    let message = req.flash('error');
+    message = (message.length > 0) ? message[0] : null;
+    res.render('auth/reset', {
+        path: '/reset',
+        pageTitle: 'Reset Password',
+        errorMessage: message
     });
 };
