@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
-    console.log(req.session.isLoggedIn);
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
@@ -11,9 +10,30 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-    // res.setHeader('Set-Cookie', 'loggedIn=true');
-    req.session.isLoggedIn = true;
-    res.redirect('/');
+    const { email, password } = req.body;
+    User.findOne({email: email})
+        .then(user => {
+            if(!user) {
+                return res.redirect('/login');
+            }
+            bcrypt
+                .compare(password, user.password)
+                .then(doMatch => {
+                    if(doMatch) {
+                        req.session.isLoggedIn = true;
+                        req.session.user = user;
+                        return req.session.save(err => {
+                            console.log(err);
+                            res.redirect('/');
+                        });
+                    }
+                    res.redirect('/login');
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.redirect('/login');
+                });
+        });
 };
 
 exports.getSignup = (req, res, next) => {
