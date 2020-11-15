@@ -60,6 +60,9 @@ exports.postEditProduct = (req, res, next) => {
     } = req.body;
     Product.findById(productId)
         .then(product => {
+            if(product.userId !== req.user._id) {
+                return res.redirect('/');
+            }
             product.title = title;
             product.price = price;
             product.description = description;
@@ -75,7 +78,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const { productId } = req.body;
-    Product.findByIdAndRemove(productId)
+    Product.deleteOne({_id: productId, userId: req.user._id})
     .then(result => {
         console.log('DESTROYED PRODUCT');
         res.redirect('/admin/products');
